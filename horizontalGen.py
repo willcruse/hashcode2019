@@ -1,7 +1,8 @@
 import random
+import multiprocessing
 
-fileName = r'inputs/c.txt'
-
+print("started")
+fileName = r'inputs/d.txt'
 first = True
 verticals = []
 allPics = []
@@ -18,8 +19,7 @@ for line in open(fileName):
             allPics.append((i, {line[i] for i in range(2, len(line))}))
         i += 1
 
-
-for uiop in range(50):
+def fu(uiop):
     random.seed(uiop)
     vertUse = [False] * len(verticals)
     horiComb = []
@@ -50,24 +50,21 @@ for uiop in range(50):
                 vertUse[maxIndex] = True
                 horiComb.append((index1, index2, maxJoinedDict))
                 totalTags += maxJoined
-        newWrite = False
-        fileName = r'./outputs/horizontalsC.txt'
-        f = open(fileName)
-        for qwer in f:
-            if int(qwer.rstrip()) <= totalTags:
-                newWrite = True
-            break
-        print(totalTags)
-        if newWrite:
-            writeFile = open(r'./outputs/horizontalsC.txt', "w+")
-            writeFile.write(str(totalTags) + '\n')
-            for x in horiComb:
-                for i in range(len(x)):
-                    if i != 2:
-                        writeFile.write(str(x[i]) + " ")
-                    else:
-                        for a in x[2]:
-                            writeFile.write(a + " ")
-                writeFile.write('\n')
-            writeFile.close()
-        f.close()
+    fiID = "./outputs/horizontalsD" + str(uiop) + ".txt"
+    writeFile = open(fiID, "w+")
+    writeFile.write(str(totalTags) + '\n')
+    for x in horiComb:
+        for i in range(len(x)):
+            if i != 2:
+                writeFile.write(str(x[i]) + " ")
+            else:
+                for a in x[2]:
+                    writeFile.write(a + " ")
+        writeFile.write('\n')
+    writeFile.close()
+
+jobs = []
+for i in range(50):
+    jobs.append(multiprocessing.Process(target=fu, args=(i,)))
+    jobs[i].start()
+
